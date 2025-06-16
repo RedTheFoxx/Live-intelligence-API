@@ -7,8 +7,7 @@ import requests
 import time
 import asyncio
 import aiohttp
-from typing import Dict, List, Optional, Union
-from concurrent.futures import ThreadPoolExecutor
+from typing import Dict, List, Optional
 
 # Deactivate SSL verification for local testing
 requests.packages.urllib3.disable_warnings()
@@ -654,6 +653,48 @@ class DocumentSearchAlt(ParadigmAPI):
             "source_chunks": chunks,
             "prompt_messages": prompt_messages,
         }
+
+
+class DocumentAnalysis(ParadigmAPI):
+    """Implementation for document analysis API endpoint."""
+
+    def execute(
+        self,
+        query: str,
+        document_ids: List[str],
+        model: str = None,
+    ) -> Dict:
+        """
+        Process document analysis requests and initiate the analysis pipeline.
+
+        Args:
+            query (str): The analysis request or question about the documents.
+            document_ids (List[str]): List of document IDs to analyze.
+            model (str, optional): Specific language model to use for analysis.
+
+        Returns:
+            Dict: API response containing the chat_session_id.
+        """
+        data = {
+            "query": query,
+            "document_ids": document_ids,
+        }
+        if model:
+            data["model"] = model
+        return self._make_request("POST", "/api/v2/chat/document-analysis", data)
+
+    def get_result(self, chat_response_id: int) -> Dict:
+        """
+        Retrieve the status or results of a document analysis request.
+
+        Args:
+            chat_response_id (int): The chat response ID returned from the initial analysis request.
+
+        Returns:
+            Dict: API response containing status, result, detailed_analysis, progress, etc.
+        """
+        endpoint = f"/api/v2/chat/document-analysis/{chat_response_id}"
+        return self._make_request("GET", endpoint)
 
 
 class Models(ParadigmAPI):
