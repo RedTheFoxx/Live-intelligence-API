@@ -779,6 +779,13 @@ class Files(ParadigmAPI):
 
         return filtered_files
 
+    def delete_file(self, file_id: str) -> Dict:
+        """
+        Delete a file from the LiveIntelligence API.
+        """
+        endpoint = f"/api/v2/files/{file_id}"
+        return self._make_request("DELETE", endpoint)
+
 
 class FileUploader(ParadigmAPI):
     """Implementation for file uploading operations."""
